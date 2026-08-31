@@ -1,8 +1,9 @@
 const std = @import("std");
 const dprint = std.debug.print;
 const Io = std.Io;
+const Idx = u32;
 
-const MAX_FILE_SIZE = 1_000_000;
+const MAX_FILE_SIZE = 100_000_000;
 
 pub fn main(init: std.process.Init) !void {
     // Prints to stderr, unbuffered, ignoring potential errors.
@@ -28,7 +29,7 @@ pub fn main(init: std.process.Init) !void {
     // const stdout_writer = &stdout_file_writer.interface;
 
     // try stdout_writer.flush(); // Don't forget to flush!
-    var buf: [1024]u8 = undefined;
+    var buf: [65536]u8 = undefined;
 
     var file = try Io.Dir.openFile(Io.Dir.cwd(), io, args[1], .{});
     defer file.close(io);
@@ -38,87 +39,127 @@ pub fn main(init: std.process.Init) !void {
     //dprint("{s}\n", .{contents[0..30]});
     // var line_iterator = std.mem.tokenizeAny(u8, contents, "\r\n");
 
-    // // Print 3 lines
-    // dprint("First 3 lines:\n", .{});
-    // for (0..2) |_| {
-    //     dprint("{s}\n", .{line_iterator.next().?});
-    // }
-    // line_iterator.reset();
+    var scope_list: [1000000]Scope = undefined;
+    var scopes: []Scope = scope_list[0..0];
 
-    // Loop setup
-    var loops: u64 = 0;
-    var depth: u64 = 0;
-    var head: u64 = 0;
-    var tail: u64 = 0;
+    {
+        var stack: [65536]Idx = undefined;
+        var stack_len: u64 = 0;
 
-    std.Treap(comptime Key: type, comptime compareFn: anytype)
+        // Loop setup
+        var loops: u64 = 0;
+        var depth: u64 = 0;
+        var head: u64 = 0;
+        var tail: u64 = 0;
 
-    try while (true) : (loops += 1) {
-        head = tail + (std.mem.find(u8, contents[tail..], "<") orelse break);
+        try while (true) : (loops += 1) {
+            head = tail + (std.mem.find(u8, contents[tail..], "<") orelse break);
 
-        const fmt_char = if (head + 1 < contents.len) contents[head + 1] else break ParseError.BadTag;
-        const check = contents[head..];
+            const fmt_char = if (head + 1 < contents.len) contents[head + 1] else break ParseError.BadTag;
+            const check = contents[head..];
 
-        const open_type: TagType = switch (fmt_char) {
-            '/' => .Close,
-            '?' => .ProcessInstruction,
-            '!' => blk: {
-                if (check.len < 4) break :blk .Declaration;
-                if (std.mem.eql(u8, check[0..3], "<!--")) break :blk .Comment;
-                if (check.len < 9) break :blk .Declaration;
-                if (std.mem.eql(u8, check[0..9], "<![CDATA[")) break :blk .Data;
-                break :blk .Declaration;
-            },
-            else => .Open,
+            const open_type: TagType = switch (fmt_char) {
+                '/' => .Close,
+                '?' => .ProcessInstruction,
+                '!' => blk: {
+                    if (check.len < 4) break :blk .Declaration;
+                    if (std.mem.eql(u8, check[0..3], "<!--")) break :blk .Comment;
+                    if (check.len < 9) break :blk .Declaration;
+                    if (std.mem.eql(u8, check[0..9], "<![CDATA[")) break :blk .Data;
+                    break :blk .Declaration;
+                },
+                else => .Open,
+            };
+
+            tail = head + switch (open_type) {
+                .Data => 3 + (std.mem.find(u8, check, "]]>") orelse break ParseError.Unclosed),
+                .Comment => 3 + (std.mem.find(u8, check, "-->") orelse break ParseError.Unclosed),
+                .ProcessInstruction => 2 + (std.mem.find(u8, check, "?>") orelse break ParseError.Unclosed),
+                else => 1 + (std.mem.find(u8, check, ">") orelse break ParseError.Unclosed),
+            };
+
+            const tag_type = if (open_type == .Open and contents[tail - 2] == '/') .OpenClose else open_type;
+
+            if (tag_type == .Open) depth += 1;
+            if (tag_type == .Close) depth -= 1;
+
+            const element = switch (tag_type) {
+                .Data => contents[head + 9 .. tail - 3],
+                .Comment => contents[head + 4 .. tail - 3],
+                .ProcessInstruction => contents[head + 2 .. tail - 2],
+                .Open => contents[head + 1 .. tail - 1],
+                .Close => contents[head + 2 .. tail - 1],
+                .OpenClose => contents[head + 1 .. tail - 2],
+                .Declaration => contents[head + 1 .. tail - 2],
+            };
+
+            //dprint("Type: {any}, Stack Len: {d}, Scopes: {d}, Slice {d}-{d}, {s}\n", .{ tag_type, stack_len, scopes.len, head, tail, element });
+            switch (tag_type) {
+                .Open, .OpenClose => {
+                    var attribute_iterator = std.mem.tokenizeAny(u8, element, " ");
+                    const name = attribute_iterator.next().?;
+
+                    scopes.len += 1;
+                    scopes[scopes.len - 1] = Scope{
+                        .name = name,
+                        .parent = if (stack_len > 0) stack[stack_len - 1] else null,
+                    };
+
+                    if (tag_type == .Open) { // Push
+                        stack[stack_len] = @truncate(scopes.len - 1);
+                        stack_len += 1;
+                    }
+
+                    while (attribute_iterator.next()) |pair| { // Do stuff
+                        _ = pair;
+                    }
+
+                    // Tags
+                    if (std.mem.eql(u8, name, "Tag")) {}
+                },
+                .Close => { // Pop
+                    if (stack_len == 0) break ParseError.BadClose;
+                    if (!std.mem.eql(u8, element, scopes[stack[stack_len - 1]].name)) {
+                        printScope(stack[stack_len - 1], scopes);
+                        break ParseError.BadClose;
+                    }
+                    stack_len -= 1;
+                },
+                else => {},
+            }
+
+            //if (loops > 100000) break ParseError.Overflow;
         };
 
-        tail = head + switch (open_type) {
-            .Data => 3 + (std.mem.find(u8, check, "]]>") orelse break ParseError.Unclosed),
-            .Comment => 3 + (std.mem.find(u8, check, "-->") orelse break ParseError.Unclosed),
-            .ProcessInstruction => 2 + (std.mem.find(u8, check, "?>") orelse break ParseError.Unclosed),
-            else => 1 + (std.mem.find(u8, check, ">") orelse break ParseError.Unclosed),
-        };
+        if (depth != 0) return ParseError.Unclosed;
+    }
 
-        const tag_type = if (open_type == .Open and contents[tail - 2] == '/') .OpenClose else open_type;
-
-        if (tag_type == .Open) depth += 1;
-        if (tag_type == .Close) depth -= 1;
-
-        const element = switch (tag_type) {
-            .Data => contents[head + 9 .. tail - 3],
-            .Comment => contents[head + 4 .. tail - 3],
-            .ProcessInstruction => contents[head + 2 .. tail - 2],
-            .Open => contents[head + 1 .. tail - 1],
-            .Close => contents[head + 2 .. tail - 1],
-            .OpenClose => contents[head + 1 .. tail - 2],
-            .Declaration => contents[head + 1 .. tail - 2],
-        };
-        //dprint("3. Type: {any}, {d}-{d}, {s}\n", .{ tag_type, head, tail, element });
-
-        switch (tag_type) {
-            .Open, .OpenClose => {
-                var attribute_iterator = std.mem.tokenizeAny(u8, element, " ");
-                const this_name = attribute_iterator.next().?;
-                if (tag_type == .Open) {
-                    // Push
-                    _ = this_name;
-                }
-
-                while (attribute_iterator.next()) |pair| {
-                    _ = pair;
-                }
-            },
-            .Close => {
-                // Pop
-            },
-            else => {},
-        }
-
-        if (loops > 1000) break ParseError.Overflow;
-    };
-
-    if (depth != 0) return ParseError.Unclosed;
+    // ??
 }
+
+fn printScope(start_idx: usize, scopes: []Scope) void {
+    var scope = scopes[start_idx];
+    var i: u64 = 0;
+    while (scope.parent) |next| : (scope = scopes[next]) {
+        dprint("{s}\\", .{scope.name});
+        if (i > 10) break;
+        i += 1;
+    }
+    dprint("{s}\n", .{scope.name});
+}
+
+const Tag = struct {
+    scope: Idx,
+    type: u16,
+    flags: TagFlags,
+};
+
+const TagFlags = enum(u16) {};
+
+const Scope = struct {
+    parent: ?Idx = null,
+    name: []const u8,
+};
 
 const TagType = enum {
     Open,
