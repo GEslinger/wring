@@ -35,8 +35,7 @@ pub fn main(init: std.process.Init) !void {
     var f_reader = file.reader(io, &buf);
 
     const contents = try f_reader.interface.allocRemaining(arena, Io.Limit.limited(MAX_FILE_SIZE));
-    dprint("{s}\n", .{contents[0..30]});
-    f_reader.pos = 0;
+    //dprint("{s}\n", .{contents[0..30]});
     // var line_iterator = std.mem.tokenizeAny(u8, contents, "\r\n");
 
     // // Print 3 lines
@@ -47,47 +46,75 @@ pub fn main(init: std.process.Init) !void {
     // line_iterator.reset();
 
     // Loop setup
-    var parsing = true;
-    parsing = true;
     var loops: u64 = 0;
     var depth: u64 = 0;
+    var head: u64 = 0;
+    var tail: u64 = 0;
 
-    try parse: while (parsing == true) : (loops += 1) {
+    std.Treap(comptime Key: type, comptime compareFn: anytype)
 
-        // Begin to parse, looking for <
-        _ = f_reader.interface.takeDelimiterInclusive('<') catch break;
+    try while (true) : (loops += 1) {
+        head = tail + (std.mem.find(u8, contents[tail..], "<") orelse break);
 
-        const next_char = f_reader.interface.peek(1) catch break ParseError.BadTag;
-        var tag_type: TagType = switch (next_char[0]) {
-            '?' => .ProcessInstruction,
+        const fmt_char = if (head + 1 < contents.len) contents[head + 1] else break ParseError.BadTag;
+        const check = contents[head..];
+
+        const open_type: TagType = switch (fmt_char) {
             '/' => .Close,
+            '?' => .ProcessInstruction,
             '!' => blk: {
-                const check_comment = f_reader.interface.peek(3) catch break :parse ParseError.BadTag;
-                if (std.mem.eql(u8, check_comment, "!--")) break :blk .Comment;
-                const check_data = f_reader.interface.peek(8) catch break :blk .Declaration;
-                if (std.mem.eql(u8, check_data, "![CDATA[")) break :blk .Data;
+                if (check.len < 4) break :blk .Declaration;
+                if (std.mem.eql(u8, check[0..3], "<!--")) break :blk .Comment;
+                if (check.len < 9) break :blk .Declaration;
+                if (std.mem.eql(u8, check[0..9], "<![CDATA[")) break :blk .Data;
                 break :blk .Declaration;
             },
             else => .Open,
         };
 
-        const tag: []u8 = try switch (tag_type) {
-            // TODO: Enforce proper ending of all tag types
-            else => f_reader.interface.takeDelimiterExclusive('>') catch ParseError.Unclosed,
+        tail = head + switch (open_type) {
+            .Data => 3 + (std.mem.find(u8, check, "]]>") orelse break ParseError.Unclosed),
+            .Comment => 3 + (std.mem.find(u8, check, "-->") orelse break ParseError.Unclosed),
+            .ProcessInstruction => 2 + (std.mem.find(u8, check, "?>") orelse break ParseError.Unclosed),
+            else => 1 + (std.mem.find(u8, check, ">") orelse break ParseError.Unclosed),
         };
 
-        if (tag.len < 1) break ParseError.BadTag;
-        if (tag[tag.len - 1] == '/') tag_type = .OpenClose;
+        const tag_type = if (open_type == .Open and contents[tail - 2] == '/') .OpenClose else open_type;
 
         if (tag_type == .Open) depth += 1;
         if (tag_type == .Close) depth -= 1;
 
-        dprint("D: {d}, Type: {any}, Len {d}, chars: {s}\n", .{ depth, tag_type, tag.len, tag });
+        const element = switch (tag_type) {
+            .Data => contents[head + 9 .. tail - 3],
+            .Comment => contents[head + 4 .. tail - 3],
+            .ProcessInstruction => contents[head + 2 .. tail - 2],
+            .Open => contents[head + 1 .. tail - 1],
+            .Close => contents[head + 2 .. tail - 1],
+            .OpenClose => contents[head + 1 .. tail - 2],
+            .Declaration => contents[head + 1 .. tail - 2],
+        };
+        //dprint("3. Type: {any}, {d}-{d}, {s}\n", .{ tag_type, head, tail, element });
 
-        if (loops > 1000) {
-            dprint("TOO MANY LOOPS!\n", .{});
-            break ParseError.Overflow;
+        switch (tag_type) {
+            .Open, .OpenClose => {
+                var attribute_iterator = std.mem.tokenizeAny(u8, element, " ");
+                const this_name = attribute_iterator.next().?;
+                if (tag_type == .Open) {
+                    // Push
+                    _ = this_name;
+                }
+
+                while (attribute_iterator.next()) |pair| {
+                    _ = pair;
+                }
+            },
+            .Close => {
+                // Pop
+            },
+            else => {},
         }
+
+        if (loops > 1000) break ParseError.Overflow;
     };
 
     if (depth != 0) return ParseError.Unclosed;
@@ -107,4 +134,5 @@ const ParseError = error{
     Overflow,
     Unclosed,
     BadTag,
+    BadClose,
 };
