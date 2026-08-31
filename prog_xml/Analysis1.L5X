@@ -1,0 +1,515 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="20.06" TargetName="Analysis1" TargetType="Controller" ContainsContext="false" Owner="Enterprise IT, BorgWarner" ExportDate="Thu Aug 13 16:40:39 2026" ExportOptions="DecoratedData ForceProtectedEncoding AllProjDocTrans">
+<Controller Use="Target" Name="Analysis1" ProcessorType="1769-L35E" MajorRev="20" MinorRev="11" CompatibilityMode="V20.01" TimeSlice="20" ShareUnusedTimeSlice="1" ProjectCreationDate="Thu Aug 13 16:01:31 2026" LastModifiedDate="Thu Aug 13 16:40:11 2026" SFCExecutionControl="CurrentActive"
+ SFCRestartPosition="MostRecent" SFCLastScan="DontScan" ProjectSN="16#0000_0000" MatchProjectToController="false" CanUseRPIFromProducer="false" InhibitAutomaticFirmwareUpdate="0">
+<RedundancyInfo Enabled="false" KeepTestEditsOnSwitchOver="false" IOMemoryPadPercentage="90" DataTablePadPercentage="50"/>
+<Security Code="0" ChangesToDetect="16#ffff_ffff_ffff_ffff"/>
+<SafetyInfo/>
+<DataTypes/>
+<Modules>
+<Module Name="Controller" CatalogNumber="1769-L35E" Vendor="1" ProductType="14" ProductCode="65" Major="20" Minor="11" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="CompactLogixL35Controller" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="LocalENB" CatalogNumber="1769-L35E Ethernet Port" Vendor="1" ProductType="12" ProductCode="120" Major="20" Minor="11" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="false"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="CompactLogixL35Ethernet" Upstream="true"/>
+<Port Id="2" Type="Ethernet" Upstream="false">
+<Bus/>
+</Port>
+</Ports>
+</Module>
+<Module Name="Local" CatalogNumber="CompactBus" Vendor="1" ProductType="12" ProductCode="71" Major="20" Minor="11" ParentModule="Controller" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="ExactMatch"/>
+<Ports>
+<Port Id="1" Address="0" Type="Compact" Upstream="false">
+<Bus Size="31"/>
+</Port>
+<Port Id="2" Address="3" Type="CompactVirtualAdapter" Upstream="true"/>
+</Ports>
+<Communications CommMethod="805306369">
+<Connections/>
+</Communications>
+<ExtendedProperties>
+<public><ConfigID>901</ConfigID><CatNum>CompactBus</CatNum></public></ExtendedProperties>
+</Module>
+<Module Name="Input" CatalogNumber="1769-IQ32T/A" Vendor="1" ProductType="7" ProductCode="76" Major="1" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="1" Type="Compact" Upstream="true"/>
+</Ports>
+<Communications>
+<ConfigTag ConfigSize="12" ExternalAccess="Read/Write">
+<Data>10 00 00 00 66 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1769_IQ32T:C:0">
+<DataValueMember Name="FilterGroup0" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Filter0OffOn_0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter0OffOn_1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter0OffOn_2" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter0OffOn_3" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter0OnOff_4" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter0OnOff_5" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter0OnOff_6" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter0OnOff_7" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FilterGroup1" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Filter1OffOn_0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter1OffOn_1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter1OffOn_2" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter1OffOn_3" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter1OnOff_4" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter1OnOff_5" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter1OnOff_6" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter1OnOff_7" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FilterGroup2" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Filter2OffOn_0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter2OffOn_1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter2OffOn_2" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter2OffOn_3" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter2OnOff_4" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter2OnOff_5" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter2OnOff_6" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter2OnOff_7" DataType="BOOL" Value="0"/>
+<DataValueMember Name="FilterGroup3" DataType="SINT" Radix="Binary" Value="2#0000_0000"/>
+<DataValueMember Name="Filter3OffOn_0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter3OffOn_1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter3OffOn_2" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter3OffOn_3" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter3OnOff_4" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter3OnOff_5" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter3OnOff_6" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Filter3OnOff_7" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Input" RPI="20000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<Comments>
+<Comment Operand=".DATA.0">
+<![CDATA[Door Shut]]>
+</Comment>
+<Comment Operand=".DATA.1">
+<![CDATA[Light Curtain OK]]>
+</Comment>
+<Comment Operand=".DATA.2">
+<![CDATA[Press At Work]]>
+</Comment>
+<Comment Operand=".DATA.3">
+<![CDATA[Press At Home]]>
+</Comment>
+<Comment Operand=".DATA.7">
+<![CDATA[E-Stop Off
+-->Broken when hit<-]]>
+</Comment>
+<Comment Operand=".DATA.10">
+<![CDATA[Door Entry PB]]>
+</Comment>
+<Comment Operand=".DATA.11">
+<![CDATA[Door Lock PB]]>
+</Comment>
+<Comment Operand=".DATA.12">
+<![CDATA[Cycle Start PB]]>
+</Comment>
+</Comments>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated">
+<Structure DataType="AB:1769_DI32:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+<ExtendedProperties>
+<public><ConfigID>450</ConfigID><CatNum>1769-IQ32T</CatNum></public></ExtendedProperties>
+</Module>
+<Module Name="Output" CatalogNumber="1769-OB32T/A" Vendor="1" ProductType="7" ProductCode="79" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true"
+>
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="2" Type="Compact" Upstream="true"/>
+</Ports>
+<Communications>
+<ConfigData ConfigSize="24">
+<Data>1C 00 00 00 66 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</Data>
+</ConfigData>
+<Connections>
+<Connection Name="Output" RPI="20000" Type="Output" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated">
+<Structure DataType="AB:1769_DO32:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="ReadBack" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Structure>
+</Data>
+</InputTag>
+<OutputTag ExternalAccess="Read/Write">
+<Comments>
+<Comment Operand=".DATA.0">
+<![CDATA[Door Lock
+Solenoid]]>
+</Comment>
+<Comment Operand=".DATA.1">
+<![CDATA[Press Work]]>
+</Comment>
+<Comment Operand=".DATA.2">
+<![CDATA[Press Home]]>
+</Comment>
+</Comments>
+<Data>00 00 00 00</Data>
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated">
+<Structure DataType="AB:1769_DO32:O:0">
+<DataValueMember Name="Data" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+</Structure>
+</Data>
+</OutputTag>
+</Connection>
+</Connections>
+</Communications>
+<ExtendedProperties>
+<public><ConfigID>350</ConfigID><CatNum>1769-OB32T</CatNum></public></ExtendedProperties>
+</Module>
+<Module CatalogNumber="1769-IF4/B" Vendor="1" ProductType="10" ProductCode="35" Major="3" Minor="1" ParentModule="Local" ParentModPortId="1" Inhibited="false" MajorFault="true">
+<EKey State="CompatibleModule"/>
+<Ports>
+<Port Id="1" Address="3" Type="Compact" Upstream="true"/>
+</Ports>
+<Communications CommMethod="536870913">
+<ConfigTag ConfigSize="12" ExternalAccess="Read/Write">
+<Data>10 00 00 00 66 00 00 00 01 00 00 00 00 00 00 00 
+00 00 00 00</Data>
+<Data Format="Decorated">
+<Structure DataType="AB:1769_IF4:C:0">
+<DataValueMember Name="Ch0Config" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000"/>
+<DataValueMember Name="Ch0Filter_0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Filter_1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Filter_2" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Filter_3" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Range_8" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Range_9" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Range_10" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0Range_11" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0DataFormat_12" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0DataFormat_13" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0DataFormat_14" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0En" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Config" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000"/>
+<DataValueMember Name="Ch1Filter_0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Filter_1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Filter_2" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Filter_3" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Range_8" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Range_9" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Range_10" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Range_11" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1DataFormat_12" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1DataFormat_13" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1DataFormat_14" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1En" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Config" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000"/>
+<DataValueMember Name="Ch2Filter_0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Filter_1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Filter_2" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Filter_3" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Range_8" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Range_9" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Range_10" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Range_11" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2DataFormat_12" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2DataFormat_13" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2DataFormat_14" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2En" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Config" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000"/>
+<DataValueMember Name="Ch3Filter_0" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Filter_1" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Filter_2" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Filter_3" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Range_8" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Range_9" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Range_10" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Range_11" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3DataFormat_12" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3DataFormat_13" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3DataFormat_14" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3En" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</ConfigTag>
+<Connections>
+<Connection Name="Input" RPI="80000" Type="Input" EventID="0" ProgrammaticallySendEventTrigger="false">
+<InputTag ExternalAccess="Read/Write">
+<ForceData>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</ForceData>
+<Data Format="Decorated">
+<Structure DataType="AB:1769_IF4:I:0">
+<DataValueMember Name="Fault" DataType="DINT" Radix="Binary" Value="2#0000_0000_0000_0000_0000_0000_0000_0000"/>
+<DataValueMember Name="Ch0Data" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Ch1Data" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Ch2Data" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Ch3Data" DataType="INT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="Status" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000"/>
+<DataValueMember Name="Ch0Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3Status" DataType="BOOL" Value="0"/>
+<DataValueMember Name="RangeFlag" DataType="INT" Radix="Binary" Value="2#0000_0000_0000_0000"/>
+<DataValueMember Name="Ch3OverRange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch3UnderRange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2OverRange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch2UnderRange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1OverRange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch1UnderRange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0OverRange" DataType="BOOL" Value="0"/>
+<DataValueMember Name="Ch0UnderRange" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</InputTag>
+</Connection>
+</Connections>
+</Communications>
+<ExtendedProperties>
+<public><ConfigID>300</ConfigID><CatNum>1769-IF4</CatNum></public></ExtendedProperties>
+</Module>
+</Modules>
+<AddOnInstructionDefinitions/>
+<Tags>
+<Tag Name="AnyStationRunning" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read Only">
+<Data>00</Data>
+<Data Format="Decorated">
+<DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="DoorIsOpen" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read Only">
+<Data>00</Data>
+<Data Format="Decorated">
+<DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="InhibitStart" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read Only">
+<Comments>
+<Comment Operand=".0">
+<![CDATA[Doors Opening]]>
+</Comment>
+</Comments>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated">
+<DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="PassFailPress" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read Only">
+<Data>00 00 00 00</Data>
+<Data Format="Decorated">
+<DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="PowerOffTMR" TagType="Base" DataType="TIMER" Constant="false" ExternalAccess="Read Only">
+<Data>00 00 00 00 E8 03 00 00 00 00 00 00</Data>
+<Data Format="Decorated">
+<Structure DataType="TIMER">
+<DataValueMember Name="PRE" DataType="DINT" Radix="Decimal" Value="1000"/>
+<DataValueMember Name="ACC" DataType="DINT" Radix="Decimal" Value="0"/>
+<DataValueMember Name="EN" DataType="BOOL" Value="0"/>
+<DataValueMember Name="TT" DataType="BOOL" Value="0"/>
+<DataValueMember Name="DN" DataType="BOOL" Value="0"/>
+</Structure>
+</Data>
+</Tag>
+<Tag Name="SafetyOK" TagType="Base" DataType="BOOL" Radix="Decimal" Constant="false" ExternalAccess="Read Only">
+<Data>00</Data>
+<Data Format="Decorated">
+<DataValue DataType="BOOL" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Programs>
+<Program Name="MainProgram" TestEdits="false" MainRoutineName="Main" Disabled="false">
+<Tags>
+<Tag Name="Seq" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read Only">
+<Comments>
+<Comment Operand=".0">
+<![CDATA[Enable]]>
+</Comment>
+<Comment Operand=".1">
+<![CDATA[Started]]>
+</Comment>
+<Comment Operand=".2">
+<![CDATA[Pressed]]>
+</Comment>
+<Comment Operand=".3">
+<![CDATA[Dwell]]>
+</Comment>
+<Comment Operand=".4">
+<![CDATA[Retracted]]>
+</Comment>
+<Comment Operand=".31">
+<![CDATA[Reset]]>
+</Comment>
+</Comments>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated">
+<DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+<Tag Name="SeqSafe" TagType="Base" DataType="DINT" Radix="Decimal" Constant="false" ExternalAccess="Read Only">
+<Comments>
+<Comment Operand=".0">
+<![CDATA[Entry Requested]]>
+</Comment>
+<Comment Operand=".1">
+<![CDATA[Start Inhibited]]>
+</Comment>
+<Comment Operand=".31">
+<![CDATA[Reset]]>
+</Comment>
+</Comments>
+<Data>00 00 00 00</Data>
+<Data Format="Decorated">
+<DataValue DataType="DINT" Radix="Decimal" Value="0"/>
+</Data>
+</Tag>
+</Tags>
+<Routines>
+<Routine Name="Main" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[JSR(R000_Safety,0);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[JSR(R050_Press,0);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="R000_Safety" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[XIO(SeqSafe.31)[XIC(Local:1:I.Data.10) ,XIC(SeqSafe.0) ]OTE(SeqSafe.0);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(SeqSafe.0)[XIO(AnyStationRunning) ,XIC(SeqSafe.1) ][OTE(SeqSafe.1) ,OTE(InhibitStart.0) ];]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(SeqSafe.1)TON(PowerOffTMR,?,?);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIO(PowerOffTMR.DN)XIC(Local:1:I.Data.0)[XIC(Local:1:I.Data.11) ,XIC(Local:2:O.Data.0) ]OTE(Local:2:O.Data.0);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[XIO(Local:1:I.Data.0)OTE(DoorIsOpen);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Text>
+<![CDATA[[XIO(Local:1:I.Data.11) ,XIO(Local:1:I.Data.0) ]OTE(SeqSafe.31);]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[XIC(Local:2:O.Data.0)XIC(Local:1:I.Data.1)XIC(Local:1:I.Data.7)OTE(SafetyOK);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+<Routine Name="R050_Press" Type="RLL">
+<RLLContent>
+<Rung Number="0" Type="N">
+<Text>
+<![CDATA[XIO(DoorIsOpen)OTE(Seq.0);]]>
+</Text>
+</Rung>
+<Rung Number="1" Type="N">
+<Text>
+<![CDATA[XIC(Seq.0)XIO(Seq.31)[XIC(Local:1:I.Data.3) XIC(Local:1:I.Data.12) ,XIC(Seq.1) ]OTE(Seq.1);]]>
+</Text>
+</Rung>
+<Rung Number="2" Type="N">
+<Text>
+<![CDATA[XIC(Seq.1)[XIC(Local:1:I.Data.2) ,XIC(Seq.2) ]OTE(Seq.2);]]>
+</Text>
+</Rung>
+<Rung Number="3" Type="N">
+<Text>
+<![CDATA[XIC(Seq.2)[XIC(Local:1:I.Data.3) ,XIC(Seq.4) ]OTE(Seq.4);]]>
+</Text>
+</Rung>
+<Rung Number="4" Type="N">
+<Text>
+<![CDATA[XIC(Seq.4)MOV(1000,PassFailPress)OTE(Seq.31);]]>
+</Text>
+</Rung>
+<Rung Number="5" Type="N">
+<Comment>
+<![CDATA[OUTPUTS]]>
+</Comment>
+<Text>
+<![CDATA[NOP();]]>
+</Text>
+</Rung>
+<Rung Number="6" Type="N">
+<Text>
+<![CDATA[XIC(Seq.1)XIO(Seq.2)OTE(Local:2:O.Data.1);]]>
+</Text>
+</Rung>
+<Rung Number="7" Type="N">
+<Text>
+<![CDATA[XIC(Seq.2)XIO(Seq.4)OTE(Local:2:O.Data.2);]]>
+</Text>
+</Rung>
+</RLLContent>
+</Routine>
+</Routines>
+</Program>
+</Programs>
+<Tasks>
+<Task Name="MainTask" Type="CONTINUOUS" Priority="10" Watchdog="500" DisableUpdateOutputs="false" InhibitTask="false">
+<ScheduledPrograms>
+<ScheduledProgram Name="MainProgram"/>
+</ScheduledPrograms>
+</Task>
+</Tasks>
+<CommPorts>
+<SerialPort Channel="0" BaudRate="19200" Parity="No Parity" DataBits="8 Bits of Data" StopBits="1 Stop Bit" ComDriverId="DF1" RTSOffDelay="0" RTSSendDelay="0" ControlLine="No Handshake" RemoteModeChangeFlag="false" ModeChangeAttentionChar="27"
+ SystemModeCharacter="83" UserModeCharacter="85" DCDWaitDelay="0">
+<ASCII XONXOFFEnable="false" DeleteMode="0" EchoMode="0" TerminationChars="65293" AppendChars="2573" BufferSize="82"/>
+<DF1 DuplicateDetection="true" ErrorDetection="BCC Error" EmbeddedResponseEnable="Autodetect" DF1Mode="Pt to Pt" ACKTimeout="50" NAKReceiveLimit="3" ENQTransmitLimit="3" TransmitRetries="3" StationAddress="0" ReplyMessageWait="5" PollingMode="Message Based (slave can initiate messages)"
+ MasterMessageTransmit="Between station polls" NormalPollNodeFile="&lt;NA&gt;" NormalPollGroupSize="0" PriorityPollNodeFile="&lt;NA&gt;" ActiveStationFile="&lt;NA&gt;" SlavePollTimeout="3000" EOTSuppression="0" MaxStationAddress="31" TokenHoldFactor="1" EnableStoreFwd="false" StoreFwdFile="&lt;NA&gt;"
+/>
+</SerialPort>
+</CommPorts>
+<CST MasterID="0"/>
+<WallClockTime LocalTimeAdjustment="0" TimeZone="0"/>
+<Trends/>
+<TimeSynchronize Priority1="128" Priority2="128" PTPEnable="false"/>
+</Controller>
+</RSLogix5000Content>
