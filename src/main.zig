@@ -2,7 +2,7 @@ const std = @import("std");
 const dprint = std.debug.print;
 const Io = std.Io;
 const Idx = u32; // No files over 4G
-const width = 32; // Vector size for SIMD
+const width = 64; // Vector size for SIMD
 
 const MAX_FILE_SIZE = 100_000_000;
 const v_zero: @Vector(width, u8) = @splat(0);
@@ -41,6 +41,8 @@ pub fn main(init: std.process.Init) !void {
         std.log.info("arg: {s}", .{arg});
     }
 
+    const iters = if (args.len >= 3) try std.fmt.parseInt(usize, args[2], 10) else 1;
+
     // In order to do I/O operations need an `Io` instance.
     const io = init.io;
 
@@ -67,9 +69,10 @@ pub fn main(init: std.process.Init) !void {
 
     //try wringReadXML(&file_reader.interface, tag_list[0..], 20_000_000);
     var x: i64 = 0;
-    for (0..1_000) |_| {
-        x += try wringReadXML(&file_reader.interface, tag_list[0..], 20_000_000);
+    for (0..iters) |_| {
+        x += try wringReadXML(&loaded_reader, tag_list[0..], 20_000_000);
         loaded_reader.seek = 0;
+        file_reader.pos = 0;
     }
     dprint("{d}\n", .{x});
 }
@@ -121,169 +124,123 @@ const Find = struct {
     close: []*const [3:0]u8,
 };
 
-/// Fills the chunk vector with peeked bytes from the reader,
-/// returning the number of bytes read.
-fn wringFillChunk(reader: *std.Io.Reader, chunk: *@Vector(width, u8)) !usize {
-    var buf: [width]u8 = undefined;
-    var w: Io.Writer = .fixed(&buf);
-    const bytes_read = reader.stream(
-        &w,
-        Io.Limit.limited(width),
-    ) catch |err| switch (err) {
-        Io.Reader.Error.EndOfStream => reader.seek,
-        else => return err,
-    };
-
-    chunk.* = @bitCast(buf);
-    return bytes_read;
-}
-
 const idx_vec = idxVec(width, u8);
 const wd_vec = splatVec(width, u8, width);
 const zero_vec = splatVec(width, u8, 0);
+const space_vec = splatVec(width, u8, ' '); // DEBUG ONLY
 
 fn wringReadXML(reader: *std.Io.Reader, tags: []Tag, max_iters: usize) !i64 {
     _ = tags;
     var mode = Mode.FindOpen;
     var iters: usize = 0;
     var pos: usize = 0;
+    pos += 0;
 
     var buf: [width]u8 = undefined;
+    var res_arr: *[width]u8 = undefined;
     var w: Io.Writer = .fixed(&buf);
     _ = &w;
     var chunk: @Vector(width, u8) = undefined;
-    var end_of_stream = false;
     var tag_type: TagType = .Close;
 
     var foo: i64 = 0;
     foo += 0;
 
-    var tag_start: usize = 0;
-    var tag_end: usize = 0;
+    var caret: u8 = width;
+    const advance = width - 3;
+    caret += 0;
 
-    while (iters < max_iters) : (iters += 1) {
-        // Stream from reader into buffer
-        // reader.streamExact(
-        //     &w,
-        //     width - bytes_read,
-        // ) catch |err| switch (err) {
-        //     Io.Reader.Error.EndOfStream => end_of_stream = true,
-        //     else => return err,
-        // };
-        dprint("e:{d} s:{d}\n", .{ reader.end, reader.seek });
-        const res_arr = reader.peekArray(width) catch return foo;
-        const bytes_read = reader.bufferedLen();
-        end_of_stream = bytes_read == 0;
+    while (iters < max_iters) : ({
+        iters += 1;
+    }) {
+        if (caret >= advance) {
+            // Reset caret
+            caret = 0;
 
-        // SIMD: Load the bytes
-        chunk = @bitCast(res_arr.*);
+            // Toss old bytes
+            reader.toss(@min(reader.bufferedLen(), advance));
 
-        // SIMD: Exclude stale bytes past the end of the valid buffer length
-        // Maybe can eliminate? we have bytes_read after all...
-        chunk = @select(
-            u8,
-            (idxVec(width, u8) <
-                splatVec(width, u8, @as(u8, @truncate(bytes_read)))), // width < 255
-            chunk,
-            zero_vec,
-        );
+            // Read bytes
+            res_arr = reader.peekArray(width) catch |err| blk: {
+                switch (err) {
+                    Io.Reader.Error.EndOfStream => {
+                        buf = @splat(0);
+                        @memcpy(buf[0..reader.bufferedLen()], reader.buffered());
+                        break :blk buf[0..width];
+                    },
+                    else => return err,
+                }
+            };
 
-        // Print
-        dprint("Foo: {d}, Mode {any}, Tag {any}, Chunk: ", .{ bytes_read, mode, (if (mode == .FindClose) tag_type else null) });
-        inline for (0..width) |i| dprint("{c}", .{chunk[i]});
-        dprint("\n", .{});
-        dprint("e:{d} s:{d}\n\n", .{ reader.end, reader.seek });
+            // SIMD: Load the bytes
+            chunk = @bitCast(res_arr.*);
+        }
+
+        //dprint("^{d}\t{any}\t{any}\t: ", .{ caret, mode, tag_type });
+        //inline for (0..width) |i| dprint("{c}", .{chunk[i]});
+        //dprint("\n", .{});
 
         // Init
         var tag_confirmed = false;
+        tag_confirmed = false;
+
+        const match_sentinel = switch (mode) {
+            .FindOpen => chunk == splatVec(width, u8, '<'),
+            .FindClose => chunk == splatVec(width, u8, '>'),
+        };
+        const sentinel_idx = @select(
+            u8,
+            match_sentinel,
+            idx_vec,
+            wd_vec,
+        );
+        const first_sentinel = @reduce(.Min, sentinel_idx);
 
         // XML tag state machine
-        const consumed: usize = sw: switch (mode) {
-            .FindOpen => {
-                //foo += @reduce(.Add, @intFromBool(chunk == splatVec(width, u8, '<')));
 
-                const match_open = (chunk == splatVec(width, u8, '<'));
-                const open_idx = @select(
-                    u8,
-                    match_open,
-                    idx_vec,
-                    wd_vec,
-                );
-                const first_open = @reduce(.Min, open_idx);
+        if (mode == .FindClose and first_sentinel < advance) {
+            const open_first: [4]u8 = @splat(res_arr[first_sentinel + 1]);
+            const open_second: [4]u8 = @splat(res_arr[first_sentinel + 2]);
 
-                if (first_open < width) mode = .OpenType;
-                break :sw first_open + 1;
-            },
-            .OpenType => {
-                const open_chars = @Vector(8, u8){ 1, 1, buf[1], buf[1], 1, buf[0], buf[0], buf[0] };
-                const match_first = opens == open_chars;
-                const match_code: u8 = @bitCast(match_first);
-                tag_type = @enumFromInt(match_code);
+            const match_code: u8 = @bitCast(opens == (open_second ++ open_first));
+            //dprint("{s} : {d}\n", .{ open_first ++ open_second, match_code });
 
-                mode = .FindClose;
-                tag_start = pos;
-                break :sw 0;
-            },
-            .FindClose => {
-                //foo -= @reduce(.Add, @intFromBool(chunk == splatVec(width, u8, '>')));
-
-                const match_close = (chunk == splatVec(width, u8, '>'));
-                const close_idx = @select(
-                    u8,
-                    match_close,
-                    idx_vec,
-                    wd_vec,
-                );
-                const first_close = @reduce(.Min, close_idx);
-
-                if (first_close > 1 and first_close < width) {
-                    const pre1 = buf[first_close - 1];
-
-                    switch (tag_type) {
-                        .ProcessInstruction => {
-                            if (pre1 == '?') tag_confirmed = true;
-                        },
-                        .Comment => {
-                            const pre2 = buf[first_close - 2];
-                            if (pre1 == '-' and pre2 == '-') tag_confirmed = true;
-                        },
-                        .Data => {
-                            const pre2 = buf[first_close - 2];
-                            if (pre1 == ']' and pre2 == ']') tag_confirmed = true;
-                        },
-                        else => {
-                            if (pre1 == '/') {
-                                tag_type = .OpenClose;
-                            }
-                            tag_confirmed = true;
-                        },
-                    }
-                }
-
-                if (tag_confirmed) {
-                    mode = .FindOpen;
-                    tag_end = pos + first_close - 1;
-                }
-
-                if (bytes_read == 0 and end_of_stream) return ParseError.Unclosed;
-
-                // Advance slower to not miss the close
-                break :sw @min(width - 3, first_close + 1);
-            },
-        };
-
-        if (tag_confirmed) {
-            //dprint("{any} : {d} : {d}\n", .{ tag_type, tag_start, tag_end });
-            foo += 1;
+            tag_type = @enumFromInt(match_code);
+            mode = .FindClose;
         }
 
-        pos += consumed;
-        //_ = w.consume(consumed);
-        reader.toss(consumed);
-        if (bytes_read == 0 and end_of_stream) break;
+        // const closer = splatVec(
+        //     width,
+        //     u8,
+        //     @as(u8, switch (tag_type) {
+        //         .ProcessInstruction => '?',
+        //         .OpenClose => '/',
+        //         .Data => ']',
+        //         else => ' ',
+        //     }),
+        // );
+        // _ = closer;
+
+        if (mode == .FindClose and first_sentinel < width) {
+            mode = .FindOpen;
+            tag_confirmed = true;
+        }
+
+        caret = first_sentinel + 1;
+
+        // SIMD: Null out bytes before caret
+        chunk = @select(u8, (idx_vec >= splatVec(width, u8, caret)), chunk, space_vec);
+
+        if (tag_confirmed) {
+            foo += 1;
+            tag_type = .None;
+        }
+
+        if (reader.end == reader.seek) break;
     } else return ParseError.Overflow;
 
     //dprint("foo {d}\n", .{foo});
+    reader.seek = 0;
     return foo;
 }
 
@@ -314,18 +271,19 @@ const Scope = struct {
 };
 
 const TagType = enum(u8) {
+    Open = 0,
     OpenClose = 1,
     Close = 32,
     ProcessInstruction = 64,
     Declaration = 128,
     Comment = 136,
     Data = 132,
-    _, // Open
+    None,
+    _, //Invalid
 };
 
 const Mode = enum {
     FindOpen,
-    OpenType,
     FindClose,
 };
 
